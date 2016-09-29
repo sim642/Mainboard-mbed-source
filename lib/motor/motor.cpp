@@ -1,11 +1,19 @@
 #include "motor.h"
 
-Motor::Motor(Serial *pc, PwmOut *pwm, DigitalOut *dir1, DigitalOut *dir2, DigitalIn *fault) {
-    _pc = pc;
-    _pwm = pwm;
-    _dir1 = dir1;
-    _dir2 = dir2;
-    _fault = fault;
+Motor::Motor(Serial *pc, PinName pwm, PinName dir1, PinName dir2, PinName fault, PinName encA, PinName encB) :
+    _pwm(pwm),
+    _dir1(dir1),
+    _dir2(dir2),
+    _fault(fault),
+    _encA(encA),
+    _encB(encB)
+{
+    _encA.mode(PullNone);
+    _encB.mode(PullNone);
+
+    ticks = 0;
+    encNow = 0;
+    encLast = 0;
 
     enc_last = 0;
 
@@ -22,32 +30,32 @@ Motor::Motor(Serial *pc, PwmOut *pwm, DigitalOut *dir1, DigitalOut *dir2, Digita
     pidError2 = 0;
     pidSetpoint = 0;
 
-    _pwm->period_us(PWM_PERIOD_US);
+    _pwm.period_us(PWM_PERIOD_US);
 }
 
 void Motor::forward(float pwm) {
     if (dir) {
-        *_dir1 = 0;
-        *_dir2 = 1;
+        _dir1 = 0;
+        _dir2 = 1;
     } else {
-        *_dir1 = 1;
-        *_dir2 = 0;
+        _dir1 = 1;
+        _dir2 = 0;
     }
 
-    *_pwm = pwm;
+    _pwm = pwm;
     currentPWM = pwm;
 }
 
 void Motor::backward(float pwm) {
     if (dir) {
-        *_dir1 = 1;
-        *_dir2 = 0;
+        _dir1 = 1;
+        _dir2 = 0;
     } else {
-        *_dir1 = 0;
-        *_dir2 = 1;
+        _dir1 = 0;
+        _dir2 = 1;
     }
 
-    *_pwm = pwm;
+    _pwm = pwm;
     currentPWM = -pwm;
 }
 
@@ -195,6 +203,13 @@ void Motor::setup() {
 }
 
 void Motor::init() {
+    _encA.rise(this, &Motor::encTick);
+    _encA.fall(this, &Motor::encTick);
+    _encB.rise(this, &Motor::encTick);
+    _encB.fall(this, &Motor::encTick);
+
+    pidTicker.attach(this, &Motor::pidTick, 0.1);
+
     dir = 0;
     motor_polarity = 0;
     pgain = 50;
@@ -223,4 +238,19 @@ void Motor::setSpeed(int16_t speed) {
 
 void Motor::getPIDGain(char *gain) {
     sprintf(gain, "PID:%d,%d,%d", pgain, igain, dgain);
+}
+
+void Motor::pidTick() {
+    pid2(ticks);
+    ticks = 0;
+}
+
+void Motor::encTick() {
+    uint8_t enc_dir;
+    encNow = _encA.read() | (_encB.read() << 1);
+    enc_dir = (encLast & 1) ^ ((encNow & 2) >> 1);
+    encLast = encNow;
+
+    if (enc_dir & 1) ticks++;
+    else ticks--;
 }
