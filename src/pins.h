@@ -41,6 +41,11 @@
 #define C_DONE P1_29
 #define PWM0 P2_5
 
+// GPIO0 (J3)
+#define ADC0 P1_30
+#define ADC1 P1_31
+#define PWM1 P2_4
+
 /*
 PwmOut MOTOR0_PWM(P2_3);
 DigitalOut MOTOR0_DIR1(P0_21);
