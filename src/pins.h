@@ -56,6 +56,10 @@
 #define LED2G P1_18
 #define LED2B P0_27
 
+// COM (J2)
+#define COMTX P0_0
+#define COMRX P0_1
+
 /*
 PwmOut MOTOR0_PWM(P2_3);
 DigitalOut MOTOR0_DIR1(P0_21);

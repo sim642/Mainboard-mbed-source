@@ -7,6 +7,7 @@
 typedef void (*VoidArray) ();
 
 Serial pc(USBTX, USBRX);
+Serial com(COMTX, COMRX);
 
 RGBLed led1(LED1R, LED1G, LED1B);
 RGBLed led2(LED2R, LED2G, LED2B);
