@@ -46,6 +46,16 @@
 #define ADC1 P1_31
 #define PWM1 P2_4
 
+// LED1
+#define LED1R P4_28
+#define LED1G P4_29
+#define LED1B P2_8
+
+// LED2
+#define LED2R P0_28
+#define LED2G P1_18
+#define LED2B P0_27
+
 /*
 PwmOut MOTOR0_PWM(P2_3);
 DigitalOut MOTOR0_DIR1(P0_21);
