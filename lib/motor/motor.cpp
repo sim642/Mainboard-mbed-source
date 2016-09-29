@@ -1,11 +1,19 @@
 #include "motor.h"
 
-Motor::Motor(Serial *pc, PinName pwm, PinName dir1, PinName dir2, PinName fault) :
+Motor::Motor(Serial *pc, PinName pwm, PinName dir1, PinName dir2, PinName fault, PinName encA, PinName encB) :
     _pwm(pwm),
     _dir1(dir1),
     _dir2(dir2),
-    _fault(fault)
+    _fault(fault),
+    _encA(encA),
+    _encB(encB)
 {
+    _encA.mode(PullNone);
+    _encB.mode(PullNone);
+
+    ticks = 0;
+    encNow = 0;
+    encLast = 0;
 
     enc_last = 0;
 
@@ -195,6 +203,13 @@ void Motor::setup() {
 }
 
 void Motor::init() {
+    _encA.rise(this, &Motor::encTick);
+    _encA.fall(this, &Motor::encTick);
+    _encB.rise(this, &Motor::encTick);
+    _encB.fall(this, &Motor::encTick);
+
+    pidTicker.attach(this, &Motor::pidTick, 0.1);
+
     dir = 0;
     motor_polarity = 0;
     pgain = 50;
@@ -223,4 +238,19 @@ void Motor::setSpeed(int16_t speed) {
 
 void Motor::getPIDGain(char *gain) {
     sprintf(gain, "PID:%d,%d,%d", pgain, igain, dgain);
+}
+
+void Motor::pidTick() {
+    pid2(ticks);
+    ticks = 0;
+}
+
+void Motor::encTick() {
+    uint8_t enc_dir;
+    encNow = _encA.read() | (_encB.read() << 1);
+    enc_dir = (encLast & 1) ^ ((encNow & 2) >> 1);
+    encLast = encNow;
+
+    if (enc_dir & 1) ticks++;
+    else ticks--;
 }

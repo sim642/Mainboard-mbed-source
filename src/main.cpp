@@ -1,82 +1,29 @@
 #include "mbed.h"
 #include "pins.h"
 #include "motor.h"
-#include "definitions.h"
-
-typedef void (*VoidArray) ();
 
 DigitalOut led(LED1);
 DigitalOut l(LED2);
 Serial pc(USBTX, USBRX);
 
-Ticker motorPidTicker[NUMBER_OF_MOTORS];
-
 char buf[16];
 bool serialData = false;
 int serialCount = 0;
 
-volatile int16_t motorTicks[NUMBER_OF_MOTORS];
-volatile uint8_t motorEncNow[NUMBER_OF_MOTORS];
-volatile uint8_t motorEncLast[NUMBER_OF_MOTORS];
+#define NUMBER_OF_MOTORS 4
 
 Motor motors[NUMBER_OF_MOTORS] = {
-    Motor(&pc, M0_PWM, M0_DIR1, M0_DIR2, M0_FAULT),
-    Motor(&pc, M1_PWM, M1_DIR1, M1_DIR2, M1_FAULT),
-    Motor(&pc, M2_PWM, M2_DIR1, M2_DIR2, M2_FAULT),
-    Motor(&pc, M3_PWM, M3_DIR1, M3_DIR2, M3_FAULT)
+    Motor(&pc, M0_PWM, M0_DIR1, M0_DIR2, M0_FAULT, M0_ENCA, M0_ENCB),
+    Motor(&pc, M1_PWM, M1_DIR1, M1_DIR2, M1_FAULT, M1_ENCA, M1_ENCB),
+    Motor(&pc, M2_PWM, M2_DIR1, M2_DIR2, M2_FAULT, M2_ENCA, M2_ENCB),
+    Motor(&pc, M3_PWM, M3_DIR1, M3_DIR2, M3_FAULT, M3_ENCA, M3_ENCB)
 };
 
 void serialInterrupt();
 void parseCommad(char *command);
 
-void motor0EncTick();
-void motor1EncTick();
-void motor2EncTick();
-#if NUMBER_OF_MOTORS == 4
-void motor3EncTick();
-#endif
-
-void motor0PidTick();
-void motor1PidTick();
-void motor2PidTick();
-#if NUMBER_OF_MOTORS == 4
-void motor3PidTick();
-#endif
-
 int main() {
-    void (*encTicker[])()  = {
-        motor0EncTick,
-        motor1EncTick,
-        motor2EncTick,
-        #if NUMBER_OF_MOTORS == 4
-        motor3EncTick
-        #endif
-    };
-
-    VoidArray pidTicker[] = {
-        motor0PidTick,
-        motor1PidTick,
-        motor2PidTick,
-        #if NUMBER_OF_MOTORS == 4
-        motor3PidTick
-        #endif
-    };
-
     for (int i = 0; i < NUMBER_OF_MOTORS; i++) {
-        MotorEncA[i]->mode(PullNone);
-        MotorEncB[i]->mode(PullNone);
-
-        motorTicks[i] = 0;
-        motorEncNow[i] = 0;
-        motorEncLast[i] = 0;
-
-        MotorEncA[i]->rise(encTicker[i]);
-        MotorEncA[i]->fall(encTicker[i]);
-        MotorEncB[i]->rise(encTicker[i]);
-        MotorEncB[i]->fall(encTicker[i]);
-
-        motorPidTicker[i].attach(pidTicker[i], 0.1);
-
         motors[i].init();
     }
 
@@ -148,17 +95,3 @@ void parseCommad (char *command) {
         pc.printf("%s\n", gain);
     }
 }
-
-MOTOR_ENC_TICK(0)
-MOTOR_ENC_TICK(1)
-MOTOR_ENC_TICK(2)
-#if NUMBER_OF_MOTORS == 4
-MOTOR_ENC_TICK(3)
-#endif
-
-MOTOR_PID_TICK(0)
-MOTOR_PID_TICK(1)
-MOTOR_PID_TICK(2)
-#if NUMBER_OF_MOTORS == 4
-MOTOR_PID_TICK(3)
-#endif
