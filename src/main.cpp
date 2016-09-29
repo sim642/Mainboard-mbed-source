@@ -2,12 +2,14 @@
 #include "pins.h"
 #include "motor.h"
 #include "definitions.h"
+#include "RGBLed.hpp"
 
 typedef void (*VoidArray) ();
 
-DigitalOut led(LED1);
-DigitalOut l(LED2);
 Serial pc(USBTX, USBRX);
+
+RGBLed led1(LED1R, LED1G, LED1B);
+RGBLed led2(LED2R, LED2G, LED2B);
 
 Ticker motorPidTicker[NUMBER_OF_MOTORS];
 
