@@ -3,6 +3,38 @@
 #include "mbed.h"
 #include "definitions.h"
 
+// MOTOR0 (J5)
+#define M0_PWM P2_3
+#define M0_DIR1 P0_21
+#define M0_DIR2 P0_20
+#define M0_ENCA P0_19
+#define M0_ENCB P0_18
+#define M0_FAULT P0_22
+
+// MOTOR1 (J7)
+#define M1_PWM P2_2
+#define M1_DIR1 P0_15
+#define M1_DIR2 P0_16
+#define M1_ENCA P2_7
+#define M1_ENCB P2_6
+#define M1_FAULT P0_17
+
+// MOTOR2 (J8)
+#define M2_PWM P2_1
+#define M2_DIR1 P0_24
+#define M2_DIR2 P0_25
+#define M2_ENCA P0_26
+#define M2_ENCB P0_9
+#define M2_FAULT P0_23
+
+// MOTOR3 (J10)
+#define M3_PWM P2_0
+#define M3_DIR1 P0_7
+#define M3_DIR2 P0_6
+#define M3_ENCA P0_5
+#define M3_ENCB P0_4
+#define M3_FAULT P0_8
+
 /*
 PwmOut MOTOR0_PWM(P2_3);
 DigitalOut MOTOR0_DIR1(P0_21);
