@@ -35,6 +35,12 @@
 #define M3_ENCB P0_4
 #define M3_FAULT P0_8
 
+// Coilgun
+#define C_CHARGE P0_10
+#define C_KICK P0_11
+#define C_DONE P1_29
+#define PWM0 P2_5
+
 /*
 PwmOut MOTOR0_PWM(P2_3);
 DigitalOut MOTOR0_DIR1(P0_21);
