@@ -1,11 +1,11 @@
 #include "motor.h"
 
-Motor::Motor(Serial *pc, PwmOut *pwm, DigitalOut *dir1, DigitalOut *dir2, DigitalIn *fault) {
-    _pc = pc;
-    _pwm = pwm;
-    _dir1 = dir1;
-    _dir2 = dir2;
-    _fault = fault;
+Motor::Motor(Serial *pc, PinName pwm, PinName dir1, PinName dir2, PinName fault) :
+    _pwm(pwm),
+    _dir1(dir1),
+    _dir2(dir2),
+    _fault(fault)
+{
 
     enc_last = 0;
 
@@ -22,32 +22,32 @@ Motor::Motor(Serial *pc, PwmOut *pwm, DigitalOut *dir1, DigitalOut *dir2, Digita
     pidError2 = 0;
     pidSetpoint = 0;
 
-    _pwm->period_us(PWM_PERIOD_US);
+    _pwm.period_us(PWM_PERIOD_US);
 }
 
 void Motor::forward(float pwm) {
     if (dir) {
-        *_dir1 = 0;
-        *_dir2 = 1;
+        _dir1 = 0;
+        _dir2 = 1;
     } else {
-        *_dir1 = 1;
-        *_dir2 = 0;
+        _dir1 = 1;
+        _dir2 = 0;
     }
 
-    *_pwm = pwm;
+    _pwm = pwm;
     currentPWM = pwm;
 }
 
 void Motor::backward(float pwm) {
     if (dir) {
-        *_dir1 = 1;
-        *_dir2 = 0;
+        _dir1 = 1;
+        _dir2 = 0;
     } else {
-        *_dir1 = 0;
-        *_dir2 = 1;
+        _dir1 = 0;
+        _dir2 = 1;
     }
 
-    *_pwm = pwm;
+    _pwm = pwm;
     currentPWM = -pwm;
 }
 

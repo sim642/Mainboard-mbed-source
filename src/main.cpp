@@ -19,7 +19,12 @@ volatile int16_t motorTicks[NUMBER_OF_MOTORS];
 volatile uint8_t motorEncNow[NUMBER_OF_MOTORS];
 volatile uint8_t motorEncLast[NUMBER_OF_MOTORS];
 
-Motor motors[NUMBER_OF_MOTORS];
+Motor motors[NUMBER_OF_MOTORS] = {
+    Motor(&pc, M0_PWM, M0_DIR1, M0_DIR2, M0_FAULT),
+    Motor(&pc, M1_PWM, M1_DIR1, M1_DIR2, M1_FAULT),
+    Motor(&pc, M2_PWM, M2_DIR1, M2_DIR2, M2_FAULT),
+    Motor(&pc, M3_PWM, M3_DIR1, M3_DIR2, M3_FAULT)
+};
 
 void serialInterrupt();
 void parseCommad(char *command);
@@ -60,8 +65,6 @@ int main() {
     for (int i = 0; i < NUMBER_OF_MOTORS; i++) {
         MotorEncA[i]->mode(PullNone);
         MotorEncB[i]->mode(PullNone);
-
-        motors[i] = Motor(&pc, MotorPwm[i], MotorDir1[i], MotorDir2[i], MotorFault[i]);
 
         motorTicks[i] = 0;
         motorEncNow[i] = 0;
