@@ -22,21 +22,23 @@ Motor motors[NUMBER_OF_MOTORS] = {
     Motor(&pc, M3_PWM, M3_DIR1, M3_DIR2, M3_FAULT, M3_ENCA, M3_ENCB)
 };
 
+PwmOut m0(M0_PWM);
+PwmOut m1(M1_PWM);
+PwmOut m2(M2_PWM);
+PwmOut m3(M3_PWM);
+PwmOut pwm0(PWM0);
+PwmOut pwm1(PWM1);
+
 void serialInterrupt();
 void parseCommad(char *command);
 
 int main() {
     while (1)
     {
-        led1.setBlue(true);
-        led2.setRed(false);
-        wait_ms(1000);
-        pc.printf("tick\n");
-
-        led1.setBlue(false);
-        led2.setRed(true);
-        wait_ms(1000);
-        pc.printf("tock\n");
+        float x;
+        pc.scanf("%f", &x);
+        pc.printf("got: %f\n", x);
+        m0 = m1 = m2 = m3 = pwm0 = pwm1 = x;
     }
 
     for (int i = 0; i < NUMBER_OF_MOTORS; i++) {
