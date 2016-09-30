@@ -26,6 +26,19 @@ void serialInterrupt();
 void parseCommad(char *command);
 
 int main() {
+    while (1)
+    {
+        led1.setBlue(true);
+        led2.setRed(false);
+        wait_ms(1000);
+        pc.printf("tick\n");
+
+        led1.setBlue(false);
+        led2.setRed(true);
+        wait_ms(1000);
+        pc.printf("tock\n");
+    }
+
     for (int i = 0; i < NUMBER_OF_MOTORS; i++) {
         motors[i].init();
     }
